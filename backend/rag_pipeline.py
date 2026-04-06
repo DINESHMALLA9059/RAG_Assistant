@@ -3,7 +3,7 @@ import pickle
 from sentence_transformers import SentenceTransformer
 from langchain_community.llms import Ollama
 
-DB_PATH = "vector_db"
+DB_PATH = "backend/vector_db"
 
 # Load embedding model
 model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -19,13 +19,17 @@ with open(f"{DB_PATH}/chunks.pkl", "rb") as f:
 llm = Ollama(model="tinyllama")
 
 
-def retrieve_chunks(query, k=3):
+def retrieve_chunks(query, k=3, threshold=1.5):
 
     query_vector = model.encode([query])
 
     distances, indices = index.search(query_vector, k)
 
-    results = [chunks[i] for i in indices[0]]
+    results = []
+
+    for i, dist in zip(indices[0], distances[0]):
+        if dist < threshold:   # ✅ filter irrelevant chunks
+            results.append(chunks[i])
 
     return results
 
@@ -53,9 +57,9 @@ Question:
 
 def ask_question(query):
 
-    docs = retrieve_chunks(query, 1)
+    docs = retrieve_chunks(query, 3)
 
-    if len(docs) == 0:
+    if not docs:
         return "This question is not related to the research papers."
 
     return generate_answer(query)

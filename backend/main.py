@@ -1,5 +1,5 @@
 from fastapi import FastAPI
-from backend.rag_pipeline import ask_question
+from .rag_pipeline import ask_question
 
 app = FastAPI()
 

@@ -6,7 +6,7 @@ from langchain_community.document_loaders import PyPDFLoader
 from langchain_text_splitters import RecursiveCharacterTextSplitter
 
 DATA_PATH = "data"
-DB_PATH = "vector_db"
+DB_PATH = "backend/vector_db"
 
 documents = []
 
